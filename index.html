@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Head WaterCare Pro - 揚程水處理企客戶水質與加藥資料管理系統</title>
+  <meta name="description" content="專業的客戶資料與加藥記錄管理系統，提供水質監測、藥品庫存與加藥趨勢分析。">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="theme-dark"> <!-- 預設為專業深色模式 -->
+  <div class="app-container">
+
+    <!-- 側邊導覽欄 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">Head</div>
+        <div class="brand-text">揚程水處理客戶管理系統</div>
+      </div>
+
+      <nav class="menu-list">
+        <a class="menu-item active" data-tab="entry-tab">
+          <i data-lucide="file-input"></i>
+          <span>新增水質記錄</span>
+        </a>
+        <a class="menu-item" data-tab="records-tab" id="menu-records">
+          <i data-lucide="table-properties"></i>
+          <span>歷史記錄管理</span>
+        </a>
+        <a class="menu-item" data-tab="charts-tab" id="menu-charts">
+          <i data-lucide="trending-up"></i>
+          <span>趨勢數據分析</span>
+        </a>
+        <a class="menu-item" data-tab="settings-tab">
+          <i data-lucide="settings"></i>
+          <span>系統備份設定</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span style="font-size: 0.8rem; color: var(--text-muted);">主題切換</span>
+        <button class="theme-toggle-btn" id="theme-toggle" title="切換深色/淺色主題">
+          <i data-lucide="sun" id="theme-icon"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- 主要內容區域 -->
+    <main class="main-content">
+
+      <!-- 頂部 Header -->
+      <header class="header">
+        <div class="page-title">
+          <h1 id="current-tab-title">新增水質記錄</h1>
+          <p id="current-tab-desc">在此輸入今日的客戶水質檢測與藥品添加數據</p>
+        </div>
+        <div class="header-meta">
+          <div class="date-badge">
+            <i data-lucide="calendar"></i>
+            <span id="header-date">2026-06-16</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 區塊 1: 新增資料 (Entry Tab) -->
+      <section class="tab-pane active" id="entry-tab">
+        <div class="card">
+          <div class="card-title">
+            <i data-lucide="edit-3"></i>客戶數據輸入表單
+          </div>
+          <form id="record-form">
+            <div class="form-grid">
+              <!-- 客戶名稱 (含自動搜尋建議) -->
+              <div class="form-group">
+                <label for="customer-search">客戶名稱 <span style="color:var(--danger)">*</span></label>
+                <div class="custom-select-wrapper">
+                  <input type="text" id="customer-search" placeholder="輸入或選擇客戶名稱..." autocomplete="off" required>
+                  <div class="select-dropdown-list" id="customer-dropdown">
+                    <!-- 動態填入客戶列表 -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sample 名稱 -->
+              <div class="form-group">
+                <label for="sample-name">Sample 名稱</label>
+                <input type="text" id="sample-name" placeholder="例如：冷卻水系統、鍋爐">
+              </div>
+
+              <!-- 記錄日期 -->
+              <div class="form-group">
+                <label for="record-date">記錄日期 <span style="color:var(--danger)">*</span></label>
+                <input type="date" id="record-date" required>
+              </div>
+
+              <!-- 導電度 -->
+              <div class="form-group">
+                <label for="conductivity">水質導電度 (µS/cm)</label>
+                <input type="number" id="conductivity" placeholder="例如：250" min="0" step="any">
+              </div>
+
+              <!-- 藥品添加量 -->
+              <div class="form-group">
+                <label for="chemical-addition">藥品添加量 (kg)</label>
+                <input type="number" id="chemical-addition" placeholder="例如：12.5" min="0" step="any">
+              </div>
+
+              <!-- 藥品消耗量 -->
+              <div class="form-group">
+                <label for="chemical-consumption">藥品消耗量 (kg)</label>
+                <input type="number" id="chemical-consumption" placeholder="例如：8.2" min="0" step="any">
+              </div>
+
+              <!-- 藥品添加後容量 -->
+              <div class="form-group">
+                <label for="volume-after">藥品添加後容量 (L)</label>
+                <input type="number" id="volume-after" placeholder="例如：1000" min="0" step="any">
+              </div>
+
+              <!-- 加藥機刻度 -->
+              <div class="form-group">
+                <label for="dosing-scale">加藥機刻度 (Hz / % / 數值)</label>
+                <input type="text" id="dosing-scale" placeholder="例如：45Hz 或 6.5">
+              </div>
+
+              <!-- 庫存藥品 -->
+              <div class="form-group">
+                <label for="inventory-chemical">本次庫存藥品名稱</label>
+                <input type="text" id="inventory-chemical" placeholder="例如：阻垢劑 A型">
+              </div>
+
+              <!-- 庫存數量 -->
+              <div class="form-group">
+                <label for="inventory-qty">庫存藥品數量 (桶 / kg)</label>
+                <input type="number" id="inventory-qty" placeholder="例如：15" min="0" step="any">
+              </div>
+            </div>
+
+            <div class="btn-container">
+              <button type="button" class="btn btn-secondary" id="btn-reset-form">
+                <i data-lucide="rotate-ccw"></i>清空輸入
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i data-lucide="save"></i>儲存資料
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- 區塊 2: 客戶檔案管理 (Records Tab) -->
+      <section class="tab-pane" id="records-tab">
+        <!-- 資料摘要網格 -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">客戶總數</span>
+            <span class="metric-value" id="metric-total-customers">0 <span style="font-size:1rem;">家</span></span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">水質檢測總筆數</span>
+            <span class="metric-value" id="metric-total-records">0 <span style="font-size:1rem;">筆</span></span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">導電度預警次數 (指標 > 1000)</span>
+            <span class="metric-value" id="metric-warning-records" style="color: var(--warning);">0 <span
+                style="color:var(--text-secondary); font-size:1rem;">次</span></span>
+          </div>
+        </div>
+
+        <!-- 歷史記錄清單 -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 16px;">
+            <i data-lucide="list"></i>歷史記錄檢視與搜尋
+          </div>
+          <div style="margin-bottom: 24px;">
+            <input type="text" id="records-search" placeholder="搜尋客戶名稱、日期、庫存藥品或備註...">
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>客戶名稱</th>
+                  <th>Sample 名稱</th>
+                  <th>記錄日期</th>
+                  <th>水質導電度 (µS/cm)</th>
+                  <th>藥品添加量 (kg)</th>
+                  <th>藥品消耗量 (kg)</th>
+                  <th>藥品添加後容量 (L)</th>
+                  <th>加藥機刻度</th>
+                  <th>庫存藥品 (數量)</th>
+                  <th style="text-align: right;">動作</th>
+                </tr>
+              </thead>
+              <tbody id="all-records-table-body">
+                <!-- 動態載入扁平化記錄 -->
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="records-empty-state" style="display:none;">
+            <i data-lucide="inbox" class="empty-state-icon"></i>
+            <p>目前尚無匹配的記錄，請先新增資料或更改搜尋條件。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 區塊 3: 趨勢數據分析 (Charts Tab) -->
+      <section class="tab-pane" id="charts-tab">
+        <div class="card">
+          <div class="card-title">
+            <i data-lucide="line-chart"></i>水質與加藥趨勢變化
+          </div>
+
+          <div class="chart-controls">
+            <div class="form-group">
+              <label for="chart-customer-select">選擇客戶</label>
+              <select id="chart-customer-select" class="chart-select">
+                <!-- 動態載入客戶 -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="chart-metric-select">分析指標</label>
+              <select id="chart-metric-select" class="chart-select">
+                <option value="conductivity">水質導電度 (µS/cm)</option>
+                <option value="chemicalAddition">藥品添加量 (kg)</option>
+                <option value="chemicalConsumption">藥品消耗量 (kg)</option>
+                <option value="volumeAfterAddition">藥品添加後容量 (L)</option>
+                <option value="dosingScale">加藥機刻度</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="trendsChart"></canvas>
+          </div>
+
+          <div class="empty-state" id="chart-empty-state" style="display:none;">
+            <i data-lucide="bar-chart-2" class="empty-state-icon"></i>
+            <p>此客戶尚無足夠數據（需要至少 1 筆記錄）以產生趨勢圖表。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 區塊 4: 系統備份設定 (Settings Tab) -->
+      <section class="tab-pane" id="settings-tab">
+        <!-- 備份設定區塊 -->
+        <div class="card">
+          <div class="card-title">
+            <i data-lucide="database"></i>資料備份與復原
+          </div>
+          <p style="margin-bottom: 24px; color: var(--text-secondary); font-size: 0.95rem;">
+            您的資料目前儲存於此瀏覽器中。為避免清理快取或換電腦時資料遺失，建議定期下載備份檔案。
+          </p>
+
+          <div class="io-grid">
+            <div class="io-card">
+              <div class="io-icon"><i data-lucide="download"></i></div>
+              <h3>匯出資料備份</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">匯出完整的系統資料庫為 JSON 檔案，以供備份或還原使用。
+              </p>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary" id="btn-export-json">
+                  <i data-lucide="file-code"></i>匯出 JSON 備份
+                </button>
+                <button class="btn btn-secondary" id="btn-export-csv">
+                  <i data-lucide="sheet"></i>匯出 CSV 報表
+                </button>
+              </div>
+            </div>
+
+            <div class="io-card">
+              <div class="io-icon"><i data-lucide="upload"></i></div>
+              <h3>還原/匯入資料</h3>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">選擇先前匯出的 JSON 備份檔案，這會覆蓋目前的本地端資料。
+              </p>
+              <div class="file-input-wrapper">
+                <button class="btn btn-secondary">
+                  <i data-lucide="folder-open"></i>選擇備份檔案 (.json)
+                </button>
+                <input type="file" id="import-file-input" accept=".json">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 客戶預設清單管理 -->
+        <div class="card">
+          <div class="card-title">
+            <i data-lucide="users"></i>預設客戶名單管理
+          </div>
+          <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 0.95rem;">
+            預先定義客戶名稱，方便在輸入表單時自動帶出，並保持資料庫名稱一致性。
+          </p>
+
+          <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+            <input type="text" id="new-customer-name" placeholder="輸入新客戶名稱..." style="flex:1;">
+            <button class="btn btn-primary" id="btn-add-customer" style="margin-top:0;">
+              <i data-lucide="plus"></i>新增客戶
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>客戶名稱</th>
+                  <th style="text-align: right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="predefined-customers-list">
+                <!-- 動態渲染預設客戶 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 危險區域 -->
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.3);">
+          <div class="card-title" style="border-left-color: var(--danger); color: var(--danger);">
+            <i data-lucide="alert-triangle"></i>危險區域
+          </div>
+          <p style="margin-bottom: 20px; color: var(--text-secondary); font-size: 0.95rem;">
+            重設系統將會刪除所有本地端客戶資料、加藥記錄與預設設定。此動作無法還原，請務必先做好備份。
+          </p>
+          <button class="btn btn-danger" id="btn-reset-all">
+            <i data-lucide="trash-2"></i>清除系統所有資料
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 全域提示訊息 Toast 容器 -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- 編輯單筆記錄的 Modal (對話框) -->
+  <div id="edit-modal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div class="card"
+      style="width:100%; max-width:650px; max-height:90vh; overflow-y:auto; margin:20px; border-color:var(--primary);">
+      <div class="card-title" style="display:flex; justify-content:between; align-items:center; width:100%;">
+        <span style="display:flex; align-items:center; gap:8px;"><i data-lucide="edit"></i>編輯記錄</span>
+      </div>
+      <form id="edit-record-form">
+        <input type="hidden" id="edit-id">
+        <div class="form-grid" style="margin-bottom: 20px;">
+          <div class="form-group">
+            <label for="edit-customer">客戶名稱 <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="edit-customer" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-sample-name">Sample 名稱</label>
+            <input type="text" id="edit-sample-name" placeholder="例如：冷卻水系統、鍋爐">
+          </div>
+          <div class="form-group">
+            <label for="edit-date">記錄日期 <span style="color:var(--danger)">*</span></label>
+            <input type="date" id="edit-date" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-conductivity">水質導電度 (µS/cm)</label>
+            <input type="number" id="edit-conductivity" min="0" step="any">
+          </div>
+          <!-- 藥品添加量 -->
+          <div class="form-group">
+            <label for="edit-chemical-addition">藥品添加量 (kg)</label>
+            <input type="number" id="edit-chemical-addition" min="0" step="any">
+          </div>
+
+          <!-- 藥品消耗量 -->
+          <div class="form-group">
+            <label for="edit-chemical-consumption">藥品消耗量 (kg)</label>
+            <input type="number" id="edit-chemical-consumption" min="0" step="any">
+          </div>
+          <div class="form-group">
+            <label for="edit-volume-after">藥品添加後容量 (L)</label>
+            <input type="number" id="edit-volume-after" min="0" step="any">
+          </div>
+          <div class="form-group">
+            <label for="edit-dosing-scale">加藥機刻度</label>
+            <input type="text" id="edit-dosing-scale">
+          </div>
+          <div class="form-group">
+            <label for="edit-inventory-chemical">本次庫存藥品名稱</label>
+            <input type="text" id="edit-inventory-chemical">
+          </div>
+          <div class="form-group">
+            <label for="edit-inventory-qty">庫存藥品數量</label>
+            <input type="number" id="edit-inventory-qty" min="0" step="any">
+          </div>
+        </div>
+        <div class="btn-container">
+          <button type="button" class="btn btn-secondary" id="btn-close-modal">取消</button>
+          <button type="submit" class="btn btn-primary">儲存變更</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 外部套件 CDN 載入 -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
